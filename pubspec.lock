@@ -88,6 +88,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "4.0.6"
+  dio_throttler:
+    dependency: "direct main"
+    description:
+      name: dio_throttler
+      sha256: "8025c2cbf46e789e1150bbe6c775b58d9c3c56656d7d1ca6c601ef0319923f77"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.1.0"
   fake_async:
     dependency: transitive
     description:

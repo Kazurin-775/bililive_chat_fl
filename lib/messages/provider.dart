@@ -44,9 +44,7 @@ class MessageProvider extends ChangeNotifier {
     var stream = server.run();
 
     // Get last 10 messages
-    var last10 = await Global.i.apiQueue.add(
-      () => getLast10Messages(Global.i.dio, roomId),
-    );
+    var last10 = await getLast10Messages(Global.i.dio, roomId);
     _messages.addAll(last10.item1.map((msg) => MessageItem(msg)));
     _messages.addAll(last10.item2.map((msg) => MessageItem(msg)));
     notifyListeners();
@@ -65,9 +63,7 @@ class MessageProvider extends ChangeNotifier {
 
   /// Fetch WebSocket server configuration from RESTful API.
   Future<void> _renewWsServerConfig() async {
-    var server = await Global.i.apiQueue.add(
-      () => getWsServerConfig(Global.i.dio, roomId),
-    );
+    var server = await getWsServerConfig(Global.i.dio, roomId);
     _host = server.hosts[0].host;
     _port = server.hosts[0].wssPort;
     _token = server.token;
