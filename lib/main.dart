@@ -87,7 +87,7 @@ class _HomePageState extends State<MyHomePage> {
           padding: const EdgeInsets.all(16),
           itemCount: provider.messages.length,
           itemBuilder: (context, index) => provider.messages[index].asWidget(),
-          separatorBuilder: (context, index) => const Divider(indent: 5),
+          separatorBuilder: (context, index) => const Divider(indent: 2),
         ),
       ),
     );

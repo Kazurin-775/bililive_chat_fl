@@ -15,27 +15,30 @@ class MessageWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      // Align avatars to the top
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Avatar
-        AvatarWidget(uid: message.uid),
-        // Horizontal space
-        const SizedBox(width: 10),
-        // Nickname and content
-        Expanded(
-          child: Column(
-            // Align texts to the left
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SenderInfoWidget(message: message),
-              const SizedBox(height: 4),
-              _buildContent(),
-            ],
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 3),
+      child: Row(
+        // Align avatars to the top
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Avatar
+          AvatarWidget(uid: message.uid),
+          // Horizontal space
+          const SizedBox(width: 10),
+          // Nickname and content
+          Expanded(
+            child: Column(
+              // Align texts to the left
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SenderInfoWidget(message: message),
+                const SizedBox(height: 4),
+                _buildContent(),
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -73,7 +76,7 @@ class SenderInfoWidget extends StatelessWidget {
         message.nickname,
         style: TextStyle(
           color: _kanchouColor(message.kanchouLv),
-          fontSize: 14,
+          fontSize: 13,
           fontWeight:
               message.kanchouLv > 0 ? FontWeight.bold : FontWeight.normal,
         ),
