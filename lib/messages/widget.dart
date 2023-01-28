@@ -1,11 +1,14 @@
 import 'package:badges/badges.dart';
 import 'package:bililive_api_fl/bililive_api_fl.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart' hide Badge;
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../avatar.dart';
 
 class MessageWidget extends StatelessWidget {
+  static const stickerScale = 0.27;
+
   final Message message;
 
   const MessageWidget({super.key, required this.message});
@@ -28,12 +31,24 @@ class MessageWidget extends StatelessWidget {
             children: [
               SenderInfoWidget(message: message),
               const SizedBox(height: 4),
-              Text(message.text),
+              _buildContent(),
             ],
           ),
         ),
       ],
     );
+  }
+
+  Widget _buildContent() {
+    var sticker = message.sticker;
+    if (sticker != null) {
+      return CachedNetworkImage(
+        imageUrl: sticker.imageUrl,
+        width: sticker.width * stickerScale,
+        height: sticker.height * stickerScale,
+      );
+    }
+    return Text(message.text);
   }
 }
 
