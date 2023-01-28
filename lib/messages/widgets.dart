@@ -1,6 +1,8 @@
 import 'package:bililive_api_fl/bililive_api_fl.dart';
 import 'package:flutter/material.dart';
 
+import 'widget.dart';
+
 abstract class ChatListItem {
   Widget asWidget();
 }
@@ -12,6 +14,6 @@ class MessageItem implements ChatListItem {
 
   @override
   Widget asWidget() {
-    return Text('${msg.nickname} says: ${msg.text}');
+    return MessageWidget(message: msg);
   }
 }
