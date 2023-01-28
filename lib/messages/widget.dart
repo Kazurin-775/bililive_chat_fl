@@ -3,6 +3,8 @@ import 'package:bililive_api_fl/bililive_api_fl.dart';
 import 'package:flutter/material.dart' hide Badge;
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+import '../avatar.dart';
+
 class MessageWidget extends StatelessWidget {
   final Message message;
 
@@ -15,13 +17,7 @@ class MessageWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Avatar
-        const CircleAvatar(
-          radius: 16,
-          // NetworkImage('https://static.hdslb.com/images/member/noface.gif'),
-          backgroundImage: AssetImage('assets/noface.gif'),
-          // Prevent a strange "border" from appearing around the image
-          backgroundColor: Colors.transparent,
-        ),
+        AvatarWidget(uid: message.uid),
         // Horizontal space
         const SizedBox(width: 10),
         // Nickname and content

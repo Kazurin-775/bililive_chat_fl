@@ -15,7 +15,9 @@ dependencies:
   badges: ^3.0.2
   bililive_api_fl:
     path: ../bililive_api_fl
+  cached_network_image: ^3.2.3
   dio: ^4.0.6
+  flutter_cache_manager: ^3.3.0
   font_awesome_flutter: ^10.3.0
   logger: ^1.1.0
   provider: ^6.0.5
