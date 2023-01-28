@@ -66,6 +66,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<MyHomePage> {
+  bool _scrollLock = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -87,21 +89,33 @@ class _HomePageState extends State<MyHomePage> {
       body: Consumer<MultiRoomProvider>(
         builder: (context, provider, child) {
           // Scroll to bottom at the end of this frame
-          WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-            widget._scrollController.animateTo(
-              widget._scrollController.position.maxScrollExtent,
-              duration: const Duration(milliseconds: 400),
-              curve: Curves.easeOut,
-            );
-          });
+          if (!_scrollLock) {
+            WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+              widget._scrollController.animateTo(
+                widget._scrollController.position.maxScrollExtent,
+                duration: const Duration(milliseconds: 400),
+                curve: Curves.easeOut,
+              );
+            });
+          }
 
-          return ListView.separated(
-            controller: widget._scrollController,
-            padding: const EdgeInsets.all(16),
-            itemCount: provider.messages.length,
-            itemBuilder: (context, index) =>
-                provider.messages[index].asWidget(),
-            separatorBuilder: (context, index) => const Divider(indent: 2),
+          return NotificationListener<ScrollNotification>(
+            onNotification: (notification) {
+              if (notification.metrics.extentAfter >= 200) {
+                _scrollLock = true;
+              } else if (notification.metrics.extentAfter <= 10) {
+                _scrollLock = false;
+              }
+              return false;
+            },
+            child: ListView.separated(
+              controller: widget._scrollController,
+              padding: const EdgeInsets.all(16),
+              itemCount: provider.messages.length,
+              itemBuilder: (context, index) =>
+                  provider.messages[index].asWidget(),
+              separatorBuilder: (context, index) => const Divider(indent: 2),
+            ),
           );
         },
       ),
