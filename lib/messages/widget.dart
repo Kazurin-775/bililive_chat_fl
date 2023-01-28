@@ -27,7 +27,7 @@ class MessageWidget extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SenderInfoWidget(message: message),
-              const SizedBox(height: 3),
+              const SizedBox(height: 4),
               Text(message.text),
             ],
           ),
@@ -58,6 +58,7 @@ class SenderInfoWidget extends StatelessWidget {
         message.nickname,
         style: TextStyle(
           color: _kanchouColor(message.kanchouLv),
+          fontSize: 14,
           fontWeight:
               message.kanchouLv > 0 ? FontWeight.bold : FontWeight.normal,
         ),
@@ -98,13 +99,13 @@ class MedalWidget extends StatelessWidget {
     return Badge(
       badgeContent: Text(
         "${medal.title} ${medal.level}",
-        style: const TextStyle(fontSize: 12, color: Colors.white),
+        style: const TextStyle(fontSize: 11, color: Colors.white),
       ),
       badgeStyle: BadgeStyle(
         elevation: 0,
         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
         shape: BadgeShape.square,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(11),
         badgeColor: Color.fromARGB(255, medal.color >> 16,
             (medal.color >> 8) & 255, medal.color & 255),
       ),
