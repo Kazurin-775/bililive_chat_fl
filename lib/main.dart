@@ -23,14 +23,16 @@ class MyApp extends StatelessWidget {
       home: ChangeNotifierProvider(
         create: (context) =>
             MultiRoomProvider(Global.i.prefs.getInt('room_id') ?? 0),
-        child: const MyHomePage(),
+        child: MyHomePage(),
       ),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
+  final ScrollController _scrollController = ScrollController();
+
+  MyHomePage({super.key});
 
   @override
   State<StatefulWidget> createState() => _HomePageState();
@@ -83,12 +85,25 @@ class _HomePageState extends State<MyHomePage> {
         ],
       ),
       body: Consumer<MultiRoomProvider>(
-        builder: (context, provider, child) => ListView.separated(
-          padding: const EdgeInsets.all(16),
-          itemCount: provider.messages.length,
-          itemBuilder: (context, index) => provider.messages[index].asWidget(),
-          separatorBuilder: (context, index) => const Divider(indent: 2),
-        ),
+        builder: (context, provider, child) {
+          // Scroll to bottom at the end of this frame
+          WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+            widget._scrollController.animateTo(
+              widget._scrollController.position.maxScrollExtent,
+              duration: const Duration(milliseconds: 400),
+              curve: Curves.easeOut,
+            );
+          });
+
+          return ListView.separated(
+            controller: widget._scrollController,
+            padding: const EdgeInsets.all(16),
+            itemCount: provider.messages.length,
+            itemBuilder: (context, index) =>
+                provider.messages[index].asWidget(),
+            separatorBuilder: (context, index) => const Divider(indent: 2),
+          );
+        },
       ),
     );
   }
