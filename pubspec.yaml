@@ -12,6 +12,14 @@ dependencies:
     sdk: flutter
   cupertino_icons: ^1.0.2
 
+  bililive_api_fl:
+    path: ../bililive_api_fl
+  dio: ^4.0.6
+  logger: ^1.1.0
+  provider: ^6.0.5
+  queue: ^3.1.0+2
+  shared_preferences: ^2.0.17
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
