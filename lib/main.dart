@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import 'global.dart';
 import 'messages/multi.dart';
+import 'widgets/input.dart';
 
 void main() async {
   await Global.init();
@@ -88,44 +89,51 @@ class _HomePageState extends State<MyHomePage> {
           ),
         ],
       ),
-      body: Consumer<MultiRoomProvider>(
-        builder: (context, provider, child) {
-          // Scroll to bottom at the end of this frame
-          if (!_scrollLock) {
-            WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-              widget._scrollController.animateTo(
-                widget._scrollController.position.maxScrollExtent,
-                duration: const Duration(milliseconds: 400),
-                curve: Curves.easeOut,
-              );
-            });
-          }
+      body: Column(
+        children: [
+          Expanded(
+            child: Consumer<MultiRoomProvider>(
+              builder: (context, provider, child) {
+                // Scroll to bottom at the end of this frame
+                if (!_scrollLock) {
+                  WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                    widget._scrollController.animateTo(
+                      widget._scrollController.position.maxScrollExtent,
+                      duration: const Duration(milliseconds: 400),
+                      curve: Curves.easeOut,
+                    );
+                  });
+                }
 
-          return NotificationListener<ScrollNotification>(
-            onNotification: (notification) {
-              if (notification.metrics.extentAfter >= 200) {
-                _scrollLock = true;
-              } else if (notification.metrics.extentAfter <= 10) {
-                _scrollLock = false;
-              }
-              return false;
-            },
-            child: ListView.separated(
-              controller: widget._scrollController,
-              itemCount: provider.messages.length,
-              itemBuilder: (context, index) =>
-                  provider.messages[index].asWidget(),
-              separatorBuilder: (context, index) => Divider(
-                // Set vertical padding to 0 (i.e. let height == thickness),
-                // so that the InkWell's tap ripple effect could fill up the
-                // whole white space of the list item
-                height: dividerThickness,
-                indent: 2,
-                endIndent: 2,
-              ),
+                return NotificationListener<ScrollNotification>(
+                  onNotification: (notification) {
+                    if (notification.metrics.extentAfter >= 200) {
+                      _scrollLock = true;
+                    } else if (notification.metrics.extentAfter <= 10) {
+                      _scrollLock = false;
+                    }
+                    return false;
+                  },
+                  child: ListView.separated(
+                    controller: widget._scrollController,
+                    itemCount: provider.messages.length,
+                    itemBuilder: (context, index) =>
+                        provider.messages[index].asWidget(),
+                    separatorBuilder: (context, index) => Divider(
+                      // Set vertical padding to 0 (i.e. let height == thickness),
+                      // so that the InkWell's tap ripple effect could fill up the
+                      // whole white space of the list item
+                      height: dividerThickness,
+                      indent: 2,
+                      endIndent: 2,
+                    ),
+                  ),
+                );
+              },
             ),
-          );
-        },
+          ),
+          const MessageInputWidget(),
+        ],
       ),
     );
   }
