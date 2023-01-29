@@ -70,6 +70,8 @@ class _HomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    var dividerThickness = DividerTheme.of(context).thickness ?? 1;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Flutter Demo Home Page'),
@@ -110,11 +112,17 @@ class _HomePageState extends State<MyHomePage> {
             },
             child: ListView.separated(
               controller: widget._scrollController,
-              padding: const EdgeInsets.all(16),
               itemCount: provider.messages.length,
               itemBuilder: (context, index) =>
                   provider.messages[index].asWidget(),
-              separatorBuilder: (context, index) => const Divider(indent: 2),
+              separatorBuilder: (context, index) => Divider(
+                // Set vertical padding to 0 (i.e. let height == thickness),
+                // so that the InkWell's tap ripple effect could fill up the
+                // whole white space of the list item
+                height: dividerThickness,
+                indent: 2,
+                endIndent: 2,
+              ),
             ),
           );
         },

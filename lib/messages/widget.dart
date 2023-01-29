@@ -15,30 +15,33 @@ class MessageWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 3),
-      child: Row(
-        // Align avatars to the top
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Avatar
-          AvatarWidget(uid: message.uid),
-          // Horizontal space
-          const SizedBox(width: 10),
-          // Nickname and content
-          Expanded(
-            child: Column(
-              // Align texts to the left
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SenderInfoWidget(message: message),
-                const SizedBox(height: 4),
-                _buildContent(),
-              ],
+    return _attachMouseEventsTo(
+      Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        child: Row(
+          // Align avatars to the top
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Avatar
+            AvatarWidget(uid: message.uid),
+            // Horizontal space
+            const SizedBox(width: 10),
+            // Nickname and content
+            Expanded(
+              child: Column(
+                // Align texts to the left
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SenderInfoWidget(message: message),
+                  const SizedBox(height: 4),
+                  _buildContent(),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
+      context,
     );
   }
 
@@ -52,6 +55,38 @@ class MessageWidget extends StatelessWidget {
       );
     }
     return Text(message.text);
+  }
+
+  Widget _attachMouseEventsTo(Widget child, BuildContext context) {
+    return InkWell(
+      onTap: () {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Message details'),
+            content: Text(_messageDetails()),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('OK'),
+              )
+            ],
+          ),
+        );
+      },
+      child: child,
+    );
+  }
+
+  String _messageDetails() =>
+      'Sender: ${message.nickname} (UID: ${message.uid})\n'
+      'Medal: ${_medalDetails()}\n'
+      'Timestamp: ${message.timestamp}';
+
+  String _medalDetails() {
+    var medal = message.medal;
+    if (medal == null) return '(None)';
+    return '${message.medal?.title} Lv. ${message.medal?.level} (${message.medal?.owner})';
   }
 }
 
