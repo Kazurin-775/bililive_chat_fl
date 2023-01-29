@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import 'global.dart';
 import 'messages/multi.dart';
+import 'platform_shim.dart' show getPlatformDefaultFont;
 import 'widgets/input.dart';
 
 void main() async {
@@ -18,7 +19,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        fontFamily: 'Microsoft YaHei UI',
+        fontFamily: getPlatformDefaultFont(),
         primarySwatch: Colors.blue,
       ),
       home: ChangeNotifierProvider(

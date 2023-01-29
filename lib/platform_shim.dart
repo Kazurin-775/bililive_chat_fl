@@ -22,3 +22,8 @@ void platformInit() {
     WidgetsFlutterBinding.ensureInitialized();
   }
 }
+
+String? getPlatformDefaultFont() {
+  if (Platform.isWindows) return 'Microsoft YaHei UI';
+  return null;
+}
