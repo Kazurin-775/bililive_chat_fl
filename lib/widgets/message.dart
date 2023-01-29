@@ -4,7 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart' hide Badge;
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import '../avatar.dart';
+import 'avatar.dart';
 
 class MessageWidget extends StatelessWidget {
   static const stickerScale = 0.27;

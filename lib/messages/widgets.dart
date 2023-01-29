@@ -1,7 +1,7 @@
 import 'package:bililive_api_fl/bililive_api_fl.dart';
 import 'package:flutter/material.dart';
 
-import 'widget.dart';
+import '../widgets/message.dart';
 
 abstract class ChatListItem {
   Widget asWidget();

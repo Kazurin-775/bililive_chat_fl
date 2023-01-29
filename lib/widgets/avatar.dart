@@ -3,7 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio_http_cache/dio_http_cache.dart';
 import 'package:flutter/material.dart';
 
-import 'global.dart';
+import '../global.dart';
 
 class AvatarWidget extends StatelessWidget {
   static const placeholderImage = AssetImage('assets/noface.gif');
