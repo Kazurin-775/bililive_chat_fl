@@ -5,7 +5,7 @@ import 'package:dio_throttler/dio_throttler.dart';
 import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'sqflite_shim.dart';
+import 'platform_shim.dart';
 
 class Global {
   static late final Global i;
@@ -15,8 +15,8 @@ class Global {
   late final SharedPreferences prefs;
 
   static Future<void> init() async {
-    // Initialize sqflite for use by dio_http_cache on Windows
-    sqfliteInit();
+    // Apply platfrom-specific shims
+    platformInit();
 
     i = Global();
 
