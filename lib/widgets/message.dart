@@ -151,7 +151,7 @@ class MedalWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Badge(
       badgeContent: Text(
-        "${medal.title} ${medal.level}",
+        '${medal.title} ${medal.level}',
         style: const TextStyle(fontSize: 11, color: Colors.white),
       ),
       badgeStyle: BadgeStyle(
