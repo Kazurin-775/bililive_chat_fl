@@ -11,11 +11,18 @@ class BiliCredsProvider extends ChangeNotifier {
   final SharedPreferences _prefs = Global.i.prefs;
   String _json = '';
   BiliCredential? _credential;
+  // For the (sole) sake of convenience, we put this flag here.
+  bool _simulateSend = false;
 
   BiliCredential? get credential => _credential;
 
+  /// In simulation mode, messages are never sent to the server, but instead
+  /// only printed to the debug console.
+  bool get simulateSend => _simulateSend;
+
   BiliCredsProvider() {
     _json = _prefs.getString('cookies') ?? '';
+    _simulateSend = _prefs.getBool('simulate_send') ?? false;
 
     if (_json.isNotEmpty) {
       _setCredsFrom(_json);
@@ -31,6 +38,12 @@ class BiliCredsProvider extends ChangeNotifier {
       uid: obj['uid'],
     );
     notifyListeners();
+  }
+
+  Future<void> toggleSimulateSend() async {
+    _simulateSend = !_simulateSend;
+    notifyListeners();
+    await _prefs.setBool('simulate_send', _simulateSend);
   }
 
   /// Show an AlertDialog that allows the user to edit the cookie JSON.

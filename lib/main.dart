@@ -95,6 +95,19 @@ class _HomePageState extends State<MyHomePage> {
                 value: 1,
                 child: Text('Set cookie JSON'),
               ),
+              PopupMenuItem(
+                value: 2,
+                child: Row(
+                  children: [
+                    // Set onChanged = null to make the checkbox not clickable
+                    Consumer<BiliCredsProvider>(
+                      builder: (context, provider, child) => Checkbox(
+                          value: provider.simulateSend, onChanged: null),
+                    ),
+                    const Text('[Debug] Simulate send'),
+                  ],
+                ),
+              ),
             ],
             onSelected: (value) {
               switch (value) {
@@ -105,6 +118,10 @@ class _HomePageState extends State<MyHomePage> {
                 case 1:
                   Provider.of<BiliCredsProvider>(context, listen: false)
                       .showEditDialog(context);
+                  break;
+                case 2:
+                  Provider.of<BiliCredsProvider>(context, listen: false)
+                      .toggleSimulateSend();
                   break;
               }
             },
