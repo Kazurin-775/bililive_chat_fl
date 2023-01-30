@@ -2,6 +2,7 @@ import 'package:bililive_api_fl/bililive_api_fl.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_http_cache/dio_http_cache.dart';
 import 'package:dio_throttler/dio_throttler.dart';
+import 'package:event_bus/event_bus.dart';
 import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -13,6 +14,7 @@ class Global {
   final Logger logger = Logger();
   final Dio dio = Dio();
   late final SharedPreferences prefs;
+  final EventBus eventBus = EventBus();
 
   static Future<void> init() async {
     // Apply platfrom-specific shims

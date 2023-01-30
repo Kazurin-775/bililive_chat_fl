@@ -59,6 +59,7 @@ class MessageProvider extends ChangeNotifier {
     }
 
     _logger.w('WebSocket stream has been terminated');
+    Global.i.eventBus.fire(RoomConnectionLossEvent(roomId));
   }
 
   /// Fetch WebSocket server configuration from RESTful API.
@@ -75,4 +76,10 @@ class MessageProvider extends ChangeNotifier {
       _prefs.setString('token_$roomId', _token!),
     ]);
   }
+}
+
+class RoomConnectionLossEvent {
+  final int roomId;
+
+  RoomConnectionLossEvent(this.roomId);
 }

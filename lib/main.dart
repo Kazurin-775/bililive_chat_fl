@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import 'global.dart';
 import 'messages/multi.dart';
+import 'messages/provider.dart';
 import 'platform_shim.dart' show getPlatformDefaultFont;
 import 'widgets/input.dart';
 
@@ -151,5 +152,27 @@ class _HomePageState extends State<MyHomePage> {
             context, Provider.of(context, listen: false)),
       );
     }
+
+    // Listen to global events
+    var eventBus = Global.i.eventBus;
+    eventBus.on<RoomConnectionLossEvent>().listen((event) {
+      if (event.roomId ==
+          Provider.of<MultiRoomProvider>(context, listen: false).current) {
+        // Connection to the current room has been lost, show a SnackBar
+        // to notify the user
+        // TODO: add reconnection strategy
+        // TODO: don't let SnackBars cover up the input bar
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          backgroundColor: Colors.red.shade800,
+          content: const Text('Connection lost! You won\'t be able to receive '
+              'new messages.'),
+          duration: const Duration(days: 365),
+          action: SnackBarAction(
+            label: 'Ignore',
+            onPressed: () {},
+          ),
+        ));
+      }
+    });
   }
 }
