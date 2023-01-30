@@ -18,21 +18,21 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        fontFamily: getPlatformDefaultFont(),
-        primarySwatch: Colors.blue,
-      ),
-      home: MultiProvider(
-        providers: [
-          ChangeNotifierProvider(
-            create: (context) =>
-                MultiRoomProvider(Global.i.prefs.getInt('room_id') ?? 0),
-          ),
-          ChangeNotifierProvider(create: (context) => BiliCredsProvider()),
-        ],
-        child: MyHomePage(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) =>
+              MultiRoomProvider(Global.i.prefs.getInt('room_id') ?? 0),
+        ),
+        ChangeNotifierProvider(create: (context) => BiliCredsProvider()),
+      ],
+      child: MaterialApp(
+        title: 'Flutter Demo',
+        theme: ThemeData(
+          fontFamily: getPlatformDefaultFont(),
+          primarySwatch: Colors.blue,
+        ),
+        home: MyHomePage(),
       ),
     );
   }
