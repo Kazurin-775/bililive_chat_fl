@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'creds.dart';
 import 'global.dart';
 import 'messages/multi.dart';
 import 'messages/provider.dart';
@@ -23,9 +24,14 @@ class MyApp extends StatelessWidget {
         fontFamily: getPlatformDefaultFont(),
         primarySwatch: Colors.blue,
       ),
-      home: ChangeNotifierProvider(
-        create: (context) =>
-            MultiRoomProvider(Global.i.prefs.getInt('room_id') ?? 0),
+      home: MultiProvider(
+        providers: [
+          ChangeNotifierProvider(
+            create: (context) =>
+                MultiRoomProvider(Global.i.prefs.getInt('room_id') ?? 0),
+          ),
+          ChangeNotifierProvider(create: (context) => BiliCredsProvider()),
+        ],
         child: MyHomePage(),
       ),
     );
@@ -82,12 +88,26 @@ class _HomePageState extends State<MyHomePage> {
           PopupMenuButton(
             itemBuilder: (context) => [
               const PopupMenuItem(
-                value: 0, // dummy value to ensure that onSelected() is called
+                value: 0,
                 child: Text('Set room ID'),
               ),
+              const PopupMenuItem(
+                value: 1,
+                child: Text('Set cookie JSON'),
+              ),
             ],
-            onSelected: (value) => widget._showRoomIdInputDialog(
-                context, Provider.of(context, listen: false)),
+            onSelected: (value) {
+              switch (value) {
+                case 0:
+                  widget._showRoomIdInputDialog(
+                      context, Provider.of(context, listen: false));
+                  break;
+                case 1:
+                  Provider.of<BiliCredsProvider>(context, listen: false)
+                      .showEditDialog(context);
+                  break;
+              }
+            },
           ),
         ],
       ),

@@ -27,3 +27,8 @@ String? getPlatformDefaultFont() {
   if (Platform.isWindows) return 'Microsoft YaHei UI';
   return null;
 }
+
+String? getPlatformMonospacedFont() {
+  if (Platform.isWindows) return 'Consolas';
+  return null;
+}
