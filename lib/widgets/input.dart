@@ -77,15 +77,19 @@ class _MessageInputWidgetState extends State<MessageInputWidget> {
             alignment: Alignment.bottomRight,
             children: [
               // Characters count
-              Padding(
-                padding: const EdgeInsets.only(right: 3),
-                child: Text(
-                  _length > 0 ? _length.toString() : '',
-                  style: TextStyle(
-                    color: _length > 20 ? Colors.red : Colors.grey.shade700,
-                    fontSize: 12,
-                    // Force monospaced character figures
-                    fontFeatures: const [FontFeature.tabularFigures()],
+              AnimatedOpacity(
+                opacity: _length > 0 ? 1 : 0,
+                duration: const Duration(milliseconds: 200),
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 3),
+                  child: Text(
+                    _length.toString(),
+                    style: TextStyle(
+                      color: _length > 20 ? Colors.red : Colors.grey.shade700,
+                      fontSize: 12,
+                      // Force monospaced character figures
+                      fontFeatures: const [FontFeature.tabularFigures()],
+                    ),
                   ),
                 ),
               ),
