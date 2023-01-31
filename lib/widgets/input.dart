@@ -1,3 +1,4 @@
+import 'package:bililive_api_fl/bililive_api_fl.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -109,7 +110,29 @@ class _MessageInputWidgetState extends State<MessageInputWidget> {
         // Simulate send
         Global.i.logger.i('Send message "$message" to room $roomId');
         await Future.delayed(const Duration(seconds: 1));
+      } else {
+        var cred = creds.credential;
+        if (cred == null) {
+          // No cookies configured, ask for one
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text(
+              'No cookies have been configured, cannot send message',
+            ),
+          ));
+          // Put the text back
+          _editController.text = message;
+        } else {
+          await sendTextMessage(Global.i.dio, roomId, message, cred);
+        }
       }
+    } catch (e) {
+      // Simple error handling
+      Global.i.logger.e(e);
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text(
+          'Failed to send message :(',
+        ),
+      ));
     } finally {
       _sendInProgress = false;
       setState(() {
