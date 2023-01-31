@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:bililive_api_fl/bililive_api_fl.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -18,6 +20,7 @@ class _MessageInputWidgetState extends State<MessageInputWidget> {
   final FocusNode _textBoxFocusNode = FocusNode();
   bool _sendInProgress = false;
   bool _busy = false;
+  int _length = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -48,11 +51,19 @@ class _MessageInputWidgetState extends State<MessageInputWidget> {
               controller: _editController,
               focusNode: _textBoxFocusNode,
               // Use gray to indicate busy state (but keep the input box enabled).
-              style: TextStyle(color: _busy ? Colors.grey : null),
+              style: TextStyle(
+                  color: _busy
+                      ? Colors.grey
+                      : (_length > 20 ? Colors.red.shade700 : null)),
               decoration: const InputDecoration(
                 hintText: 'Say something...',
                 border: InputBorder.none,
               ),
+              onChanged: (value) => setState(() {
+                // TODO: this results in frequent UI rebuilds that may slow
+                // down the app.
+                _length = value.length;
+              }),
               onSubmitted: (message) {
                 if (message.isNotEmpty) {
                   _onSend(message);
@@ -62,24 +73,42 @@ class _MessageInputWidgetState extends State<MessageInputWidget> {
               },
             ),
           ),
-          // Send button
-          IconButton(
-            // Disable this button when busy
-            // TODO: ternary operator results in ugly formatting. How to resolve this?
-            onPressed: _busy
-                ? null
-                : () {
-                    var message = _editController.text;
-                    if (message.isNotEmpty) {
-                      _onSend(message);
-                    } else {
-                      Global.i.logger.d('Nothing to send');
-                    }
-                  },
-            icon: _busy
-                ? const CircularProgressIndicator()
-                : const Icon(Icons.send),
-            color: Colors.blue,
+          Stack(
+            alignment: Alignment.bottomRight,
+            children: [
+              // Characters count
+              Padding(
+                padding: const EdgeInsets.only(right: 3),
+                child: Text(
+                  _length > 0 ? _length.toString() : '',
+                  style: TextStyle(
+                    color: _length > 20 ? Colors.red : Colors.grey.shade700,
+                    fontSize: 12,
+                    // Force monospaced character figures
+                    fontFeatures: const [FontFeature.tabularFigures()],
+                  ),
+                ),
+              ),
+              // Send button
+              IconButton(
+                // Disable this button when busy
+                // TODO: ternary operator results in ugly formatting. How to resolve this?
+                onPressed: _busy
+                    ? null
+                    : () {
+                        var message = _editController.text;
+                        if (message.isNotEmpty) {
+                          _onSend(message);
+                        } else {
+                          Global.i.logger.d('Nothing to send');
+                        }
+                      },
+                icon: _busy
+                    ? const CircularProgressIndicator()
+                    : const Icon(Icons.send),
+                color: Colors.blue,
+              ),
+            ],
           ),
         ],
       ),
@@ -94,6 +123,8 @@ class _MessageInputWidgetState extends State<MessageInputWidget> {
     try {
       setState(() {
         _busy = true;
+        // Temporarily set text length to 0
+        _length = 0;
       });
 
       // Clear input box (to indicate to the user that the app has acknowledged
@@ -137,6 +168,10 @@ class _MessageInputWidgetState extends State<MessageInputWidget> {
       _sendInProgress = false;
       setState(() {
         _busy = false;
+        // Maintain correct length (this also works if the user have already
+        // typed another message)
+        // Unfortunately, state management is hard :(
+        _length = _editController.text.length;
       });
     }
   }
