@@ -4,14 +4,24 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart' hide Badge;
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+import '../utils.dart';
 import 'avatar.dart';
 
-class MessageWidget extends StatelessWidget {
+class MessageWidget extends StatefulWidget {
   static const stickerScale = 0.27;
 
   final Message message;
 
   const MessageWidget({super.key, required this.message});
+
+  @override
+  State<StatefulWidget> createState() => _MessageWidgetState();
+}
+
+class _MessageWidgetState extends State<MessageWidget> {
+  bool _timestampVisible = false;
+
+  Message get message => widget.message;
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +42,10 @@ class MessageWidget extends StatelessWidget {
                 // Align texts to the left
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SenderInfoWidget(message: message),
+                  SenderInfoWidget(
+                    message: message,
+                    timestampVisible: _timestampVisible,
+                  ),
                   const SizedBox(height: 4),
                   _buildContent(),
                 ],
@@ -50,8 +63,8 @@ class MessageWidget extends StatelessWidget {
     if (sticker != null) {
       return CachedNetworkImage(
         imageUrl: sticker.imageUrl,
-        width: sticker.width * stickerScale,
-        height: sticker.height * stickerScale,
+        width: sticker.width * MessageWidget.stickerScale,
+        height: sticker.height * MessageWidget.stickerScale,
       );
     }
     return Text(message.text);
@@ -74,6 +87,9 @@ class MessageWidget extends StatelessWidget {
           ),
         );
       },
+      onHover: (hover) => setState(() {
+        _timestampVisible = hover;
+      }),
       child: child,
     );
   }
@@ -93,8 +109,13 @@ class MessageWidget extends StatelessWidget {
 /// Sender info widget (including nickname, icons (badges) and medal).
 class SenderInfoWidget extends StatelessWidget {
   final Message message;
+  final bool timestampVisible;
 
-  const SenderInfoWidget({super.key, required this.message});
+  const SenderInfoWidget({
+    super.key,
+    required this.message,
+    required this.timestampVisible,
+  });
 
   Color _kanchouColor(int lv) {
     if (lv == 0) return Colors.grey;
@@ -133,6 +154,13 @@ class SenderInfoWidget extends StatelessWidget {
       items.add(MedalWidget(medal: medal));
     }
 
+    // Message timestamp
+    items.add(FadingWidget(
+      visible: timestampVisible,
+      duration: const Duration(milliseconds: 200),
+      child: TimestampWidget(timestamp: message.timestamp),
+    ));
+
     return Wrap(
       spacing: 6,
       crossAxisAlignment: WrapCrossAlignment.center,
@@ -164,6 +192,32 @@ class MedalWidget extends StatelessWidget {
       ),
       // toAnimate: false,
       badgeAnimation: const BadgeAnimation.fade(),
+    );
+  }
+}
+
+class TimestampWidget extends StatelessWidget {
+  final DateTime timestamp;
+
+  const TimestampWidget({super.key, required this.timestamp});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const FaIcon(
+          FontAwesomeIcons.clock,
+          size: 10,
+          color: Colors.grey,
+        ),
+        const SizedBox(width: 3),
+        Text(
+          '${timestamp.hour}:${timestamp.minute.toString().padLeft(2, '0')}:'
+          '${timestamp.second.toString().padLeft(2, '0')}',
+          style: const TextStyle(fontSize: 12, color: Colors.grey),
+        ),
+      ],
     );
   }
 }
