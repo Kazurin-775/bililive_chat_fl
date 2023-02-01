@@ -40,8 +40,8 @@ class _MessageInputWidgetState extends State<MessageInputWidget> {
         children: [
           // Open emotion / sticker drawer
           IconButton(
-            onPressed: () {
-              showModalBottomSheet(
+            onPressed: () async {
+              var stickerId = await showModalBottomSheet<String>(
                 context: context,
                 builder: (context) => StickerPicker(
                   roomId: Provider.of<MultiRoomProvider>(context, listen: false)
@@ -50,6 +50,9 @@ class _MessageInputWidgetState extends State<MessageInputWidget> {
                       .credential,
                 ),
               );
+              if (stickerId != null) {
+                _onSendSticker(stickerId);
+              }
             },
             icon: const Icon(Icons.emoji_emotions),
             // Use gray to indicate busy state (but keep the button enabled).
@@ -77,7 +80,7 @@ class _MessageInputWidgetState extends State<MessageInputWidget> {
               }),
               onSubmitted: (message) {
                 if (message.isNotEmpty) {
-                  _onSend(message);
+                  _onSendText(message);
                 } else {
                   Global.i.logger.d('Nothing to send');
                 }
@@ -113,7 +116,7 @@ class _MessageInputWidgetState extends State<MessageInputWidget> {
                     : () {
                         var message = _editController.text;
                         if (message.isNotEmpty) {
-                          _onSend(message);
+                          _onSendText(message);
                         } else {
                           Global.i.logger.d('Nothing to send');
                         }
@@ -130,7 +133,7 @@ class _MessageInputWidgetState extends State<MessageInputWidget> {
     );
   }
 
-  void _onSend(String message) async {
+  void _onSendText(String message) async {
     // Prevent re-entrance (is this ever necessary?)
     if (_sendInProgress) return;
     _sendInProgress = true;
@@ -189,6 +192,10 @@ class _MessageInputWidgetState extends State<MessageInputWidget> {
         _length = _editController.text.length;
       });
     }
+  }
+
+  void _onSendSticker(String stickerId) async {
+    Global.i.logger.i('Send sticker $stickerId');
   }
 
   @override

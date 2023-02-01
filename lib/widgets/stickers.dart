@@ -79,10 +79,16 @@ class _StickerPickerState extends State<StickerPicker>
                   padding: const EdgeInsets.all(8),
                   children: [
                     for (var item in pack.items)
-                      CachedNetworkImage(
-                        imageUrl: item.url,
-                        width: item.width * scaleRatio,
-                        height: item.height * scaleRatio,
+                      InkWell(
+                        onTap: () {
+                          // Close the drawer, returning the sticker ID to the caller
+                          Navigator.of(context).pop(item.id);
+                        },
+                        child: CachedNetworkImage(
+                          imageUrl: item.url,
+                          width: item.width * scaleRatio,
+                          height: item.height * scaleRatio,
+                        ),
                       ),
                   ],
                 ),
