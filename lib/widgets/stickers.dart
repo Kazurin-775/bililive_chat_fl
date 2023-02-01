@@ -1,4 +1,5 @@
 import 'package:bililive_api_fl/bililive_api_fl.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio_http_cache/dio_http_cache.dart';
 import 'package:flutter/material.dart';
 
@@ -17,6 +18,7 @@ class StickerPicker extends StatefulWidget {
 class _StickerPickerState extends State<StickerPicker>
     with SingleTickerProviderStateMixin {
   static const double height = 800;
+  static const double scaleRatio = 0.5;
 
   TabController? _tabController;
   List<StickerPack>? _packs;
@@ -63,7 +65,23 @@ class _StickerPickerState extends State<StickerPicker>
           child: TabBarView(
             controller: tabController,
             children: [
-              for (var pack in packs) Center(child: Text(pack.name)),
+              for (var pack in packs)
+                GridView.extent(
+                  // TODO: handle packs with no items?? & handle packs without
+                  // size constraints (i.e. width == 0 && height == 0)
+                  maxCrossAxisExtent: pack.items[0].width * scaleRatio,
+                  mainAxisSpacing: 12,
+                  crossAxisSpacing: 8,
+                  padding: const EdgeInsets.all(8),
+                  children: [
+                    for (var item in pack.items)
+                      CachedNetworkImage(
+                        imageUrl: item.url,
+                        width: item.width * scaleRatio,
+                        height: item.height * scaleRatio,
+                      ),
+                  ],
+                ),
             ],
           ),
         ),
@@ -102,6 +120,12 @@ class _StickerPickerState extends State<StickerPicker>
         cred,
         options: buildCacheOptions(const Duration(days: 7)),
       );
+
+      // Only show official and room-specific stickers (emojis are not
+      // supported yet)
+      packs = packs
+          .where((pack) => pack.type == 1 || pack.type == 2)
+          .toList(growable: false);
 
       _tabController = TabController(length: packs.length, vsync: this);
       setState(() {
