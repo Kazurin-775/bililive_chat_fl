@@ -195,7 +195,49 @@ class _MessageInputWidgetState extends State<MessageInputWidget> {
   }
 
   void _onSendSticker(String stickerId) async {
-    Global.i.logger.i('Send sticker $stickerId');
+    // Prevent re-entrance (is this ever necessary?)
+    if (_sendInProgress) return;
+    _sendInProgress = true;
+
+    try {
+      setState(() {
+        _busy = true;
+      });
+
+      var roomId =
+          Provider.of<MultiRoomProvider>(context, listen: false).current;
+      var credsProvider =
+          Provider.of<BiliCredsProvider>(context, listen: false);
+      var cred = credsProvider.credential;
+
+      if (credsProvider.simulateSend) {
+        // Simulate send
+        Global.i.logger.i('Send sticker $stickerId to $roomId');
+        await Future.delayed(const Duration(seconds: 1));
+      } else if (cred == null) {
+        // No cookies configured, ask for one
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text(
+            'No cookies have been configured, cannot send sticker',
+          ),
+        ));
+      } else {
+        await sendStickerMessage(Global.i.dio, roomId, stickerId, cred);
+      }
+    } catch (e) {
+      // Simple error handling
+      Global.i.logger.e(e);
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text(
+          'Failed to send sticker message :(',
+        ),
+      ));
+    } finally {
+      _sendInProgress = false;
+      setState(() {
+        _busy = false;
+      });
+    }
   }
 
   @override
