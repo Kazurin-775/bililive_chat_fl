@@ -1,7 +1,10 @@
+import 'dart:math';
+
 import 'package:bililive_api_fl/bililive_api_fl.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio_http_cache/dio_http_cache.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../global.dart';
 
@@ -20,6 +23,7 @@ class _StickerPickerState extends State<StickerPicker>
   static const double height = 800;
   static const double scaleRatio = 0.5;
 
+  final SharedPreferences _prefs = Global.i.prefs;
   TabController? _tabController;
   List<StickerPack>? _packs;
   bool _error = false;
@@ -127,8 +131,18 @@ class _StickerPickerState extends State<StickerPicker>
           .where((pack) => pack.type == 1 || pack.type == 2)
           .toList(growable: false);
 
-      _tabController = TabController(length: packs.length, vsync: this);
+      // Initialize tab controller
+      var tabController = TabController(length: packs.length, vsync: this);
+      // Save and restore current tab index
+      tabController.index =
+          min(_prefs.getInt('stickers_tab_index') ?? 0, tabController.length);
+      tabController.addListener(() {
+        _prefs.setInt('stickers_tab_index', tabController.index);
+      });
+
+      // Update UI
       setState(() {
+        _tabController = tabController;
         _packs = packs;
       });
     } catch (e) {
