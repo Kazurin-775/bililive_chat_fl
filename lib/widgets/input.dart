@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import '../creds.dart';
 import '../global.dart';
 import '../messages/multi.dart';
+import 'dashboard.dart';
 import 'stickers.dart';
 
 class MessageInputWidget extends StatefulWidget {
@@ -118,12 +119,24 @@ class _MessageInputWidgetState extends State<MessageInputWidget> {
                         if (message.isNotEmpty) {
                           _onSendText(message);
                         } else {
-                          Global.i.logger.d('Nothing to send');
+                          // Global.i.logger.d('Nothing to send');
+
+                          // Open personal dashboard
+                          showModalBottomSheet(
+                            context: context,
+                            builder: (context) => PersonalDashboard(
+                              cred: Provider.of<BiliCredsProvider>(context,
+                                      listen: false)
+                                  .credential,
+                            ),
+                          );
                         }
                       },
                 icon: _busy
                     ? const CircularProgressIndicator()
-                    : const Icon(Icons.send),
+                    : (_length > 0
+                        ? const Icon(Icons.send)
+                        : const Icon(Icons.expand_less)),
                 color: Colors.blue,
               ),
             ],
