@@ -20,7 +20,6 @@ class StickerPicker extends StatefulWidget {
 
 class _StickerPickerState extends State<StickerPicker>
     with SingleTickerProviderStateMixin {
-  static const double height = 800;
   static const double scaleRatio = 0.5;
 
   final SharedPreferences _prefs = Global.i.prefs;
@@ -30,13 +29,6 @@ class _StickerPickerState extends State<StickerPicker>
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: height,
-      child: _buildContent(context),
-    );
-  }
-
-  Widget _buildContent(BuildContext context) {
     if (widget.cred == null) {
       return _buildWarning('You have to be logged in to view room stickers.');
     }
