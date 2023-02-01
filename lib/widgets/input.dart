@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import '../creds.dart';
 import '../global.dart';
 import '../messages/multi.dart';
+import 'stickers.dart';
 
 class MessageInputWidget extends StatefulWidget {
   const MessageInputWidget({super.key});
@@ -39,7 +40,17 @@ class _MessageInputWidgetState extends State<MessageInputWidget> {
         children: [
           // Open emotion / sticker drawer
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              showModalBottomSheet(
+                context: context,
+                builder: (context) => StickerPicker(
+                  roomId: Provider.of<MultiRoomProvider>(context, listen: false)
+                      .current,
+                  cred: Provider.of<BiliCredsProvider>(context, listen: false)
+                      .credential,
+                ),
+              );
+            },
             icon: const Icon(Icons.emoji_emotions),
             // Use gray to indicate busy state (but keep the button enabled).
             // TODO: better UX design?
