@@ -139,12 +139,14 @@ class _MessageWidgetState extends State<MessageWidget> {
             Icons.assignment_ind,
             SelectableText(_medalDetails(), style: _messageDetailsTextStyle),
           ),
-          if (message.sticker != null)
-            _buildMessageDetailsItem(
-              Icons.message,
-              SelectableText('"${message.text}" (${message.sticker!.id})',
-                  style: _messageDetailsTextStyle),
-            ),
+          _buildMessageDetailsItem(
+            Icons.message,
+            SelectableText(
+                (message.sticker != null)
+                    ? '"${message.text}" (${message.sticker!.id})' // Sticker content
+                    : '"${message.text}"', // Message content
+                style: _messageDetailsTextStyle),
+          ),
           _buildMessageDetailsItem(
             Icons.access_time,
             SelectableText('${message.timestamp}',
