@@ -1,8 +1,10 @@
 import 'package:badges/badges.dart';
 import 'package:bililive_api_fl/bililive_api_fl.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart' hide Badge;
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../utils.dart';
 import 'avatar.dart';
@@ -77,7 +79,11 @@ class _MessageWidgetState extends State<MessageWidget> {
           context: context,
           builder: (context) => AlertDialog(
             title: const Text('Message details'),
-            content: Text(_messageDetails()),
+            content: Text.rich(
+              _messageDetails(),
+              // Set line spacing to 1.5
+              style: const TextStyle(height: 1.5),
+            ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
@@ -94,10 +100,39 @@ class _MessageWidgetState extends State<MessageWidget> {
     );
   }
 
-  String _messageDetails() =>
-      'Sender: ${message.nickname} (UID: ${message.uid})\n'
-      'Medal: ${_medalDetails()}\n'
-      'Timestamp: ${message.timestamp}';
+  TextSpan _messageDetails() => TextSpan(children: [
+        WidgetSpan(
+          child: Icon(Icons.person, size: 20, color: Colors.blue.shade600),
+        ),
+        TextSpan(text: ' ${message.nickname} (UID: '),
+        // Homepage hyperlink
+        TextSpan(
+          text: message.uid.toString(),
+          style: TextStyle(
+            color: Colors.blue.shade800,
+            decoration: TextDecoration.underline,
+          ),
+          recognizer: TapGestureRecognizer()
+            ..onTap = () => launchUrl(
+                Uri.https('space.bilibili.com', message.uid.toString())),
+        ),
+        const TextSpan(text: ')\n'),
+        WidgetSpan(
+          child:
+              Icon(Icons.assignment_ind, size: 20, color: Colors.blue.shade600),
+        ),
+        TextSpan(text: ' ${_medalDetails()}\n'),
+        if (message.sticker != null)
+          WidgetSpan(
+            child: Icon(Icons.message, size: 20, color: Colors.blue.shade600),
+          ),
+        if (message.sticker != null)
+          TextSpan(text: ' "${message.text}" (${message.sticker!.id})\n'),
+        WidgetSpan(
+          child: Icon(Icons.access_time, size: 20, color: Colors.blue.shade600),
+        ),
+        TextSpan(text: ' ${message.timestamp}'),
+      ]);
 
   String _medalDetails() {
     var medal = message.medal;
