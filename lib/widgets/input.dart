@@ -39,27 +39,8 @@ class _MessageInputWidgetState extends State<MessageInputWidget> {
       ),
       child: Row(
         children: [
-          // Open emotion / sticker drawer
-          IconButton(
-            onPressed: () async {
-              var stickerId = await showModalBottomSheet<String>(
-                context: context,
-                builder: (context) => StickerPicker(
-                  roomId: Provider.of<MultiRoomProvider>(context, listen: false)
-                      .current,
-                  cred: Provider.of<BiliCredsProvider>(context, listen: false)
-                      .credential,
-                ),
-              );
-              if (stickerId != null) {
-                _onSendSticker(stickerId);
-              }
-            },
-            icon: const Icon(Icons.emoji_emotions),
-            // Use gray to indicate busy state (but keep the button enabled).
-            // TODO: better UX design?
-            color: _busy ? Colors.grey : Colors.blue,
-          ),
+          // Padding
+          const SizedBox(width: 12),
           // Text field
           Expanded(
             child: TextField(
@@ -87,6 +68,27 @@ class _MessageInputWidgetState extends State<MessageInputWidget> {
                 }
               },
             ),
+          ),
+          // Open emotion / sticker drawer
+          IconButton(
+            onPressed: () async {
+              var stickerId = await showModalBottomSheet<String>(
+                context: context,
+                builder: (context) => StickerPicker(
+                  roomId: Provider.of<MultiRoomProvider>(context, listen: false)
+                      .current,
+                  cred: Provider.of<BiliCredsProvider>(context, listen: false)
+                      .credential,
+                ),
+              );
+              if (stickerId != null) {
+                _onSendSticker(stickerId);
+              }
+            },
+            icon: const Icon(Icons.emoji_emotions),
+            // Use gray to indicate busy state (but keep the button enabled).
+            // TODO: better UX design?
+            color: _busy ? Colors.grey : Colors.blue,
           ),
           Stack(
             alignment: Alignment.bottomRight,
