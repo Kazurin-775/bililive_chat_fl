@@ -112,7 +112,7 @@ class _MessageWidgetState extends State<MessageWidget> {
         children: [
           _buildMessageDetailsItem(
             Icons.person,
-            Text.rich(
+            SelectableText.rich(
               TextSpan(
                 text: '${message.nickname} (UID: ',
                 children: [
@@ -137,17 +137,18 @@ class _MessageWidgetState extends State<MessageWidget> {
           ),
           _buildMessageDetailsItem(
             Icons.assignment_ind,
-            Text(_medalDetails(), style: _messageDetailsTextStyle),
+            SelectableText(_medalDetails(), style: _messageDetailsTextStyle),
           ),
           if (message.sticker != null)
             _buildMessageDetailsItem(
               Icons.message,
-              Text('"${message.text}" (${message.sticker!.id})',
+              SelectableText('"${message.text}" (${message.sticker!.id})',
                   style: _messageDetailsTextStyle),
             ),
           _buildMessageDetailsItem(
             Icons.access_time,
-            Text('${message.timestamp}', style: _messageDetailsTextStyle),
+            SelectableText('${message.timestamp}',
+                style: _messageDetailsTextStyle),
           ),
         ],
       );
