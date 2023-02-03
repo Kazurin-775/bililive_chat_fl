@@ -21,7 +21,7 @@ class MessageWidget extends StatefulWidget {
 }
 
 class _MessageWidgetState extends State<MessageWidget> {
-  static const TextStyle _messageDetailsTextStyle = TextStyle(height: 1.5);
+  static const TextStyle _messageDetailsTextStyle = TextStyle(height: 1.7);
 
   bool _timestampVisible = false;
 
