@@ -16,6 +16,8 @@ class PersonalDashboard extends StatefulWidget {
 
 class _PersonalDashboardState extends State<PersonalDashboard>
     with SingleTickerProviderStateMixin {
+  bool _locked = false;
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -62,6 +64,10 @@ class _PersonalDashboardState extends State<PersonalDashboard>
                 return;
               }
 
+              setState(() {
+                _locked = true;
+              });
+
               try {
                 var result = await dailyCheckIn(Global.i.dio, cred);
 
@@ -86,6 +92,10 @@ class _PersonalDashboardState extends State<PersonalDashboard>
                 Global.i.logger.e(e);
                 await _showResultDialog(context, 'Error',
                     'Failed to perform check in: unknown error');
+              } finally {
+                setState(() {
+                  _locked = false;
+                });
               }
             },
           ),
@@ -103,7 +113,7 @@ class _PersonalDashboardState extends State<PersonalDashboard>
     const buttonPadding = EdgeInsets.symmetric(horizontal: 12, vertical: 16);
 
     return ElevatedButton.icon(
-      onPressed: onPressed,
+      onPressed: (_locked || widget.cred == null) ? null : onPressed,
       icon: Icon(icon, size: 16),
       label: Text(text),
       style: ElevatedButton.styleFrom(
@@ -121,7 +131,7 @@ class _PersonalDashboardState extends State<PersonalDashboard>
       return;
     }
 
-    showDialog(
+    await showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: Text(title),
