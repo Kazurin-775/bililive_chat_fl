@@ -54,7 +54,40 @@ class _PersonalDashboardState extends State<PersonalDashboard>
             'Daily check in',
             Icons.event_available,
             Colors.blue.shade400,
-            () {},
+            () async {
+              var cred = widget.cred;
+              if (cred == null) {
+                await _showResultDialog(
+                    context, 'Error', 'Not signed in yet, cannot check in');
+                return;
+              }
+
+              try {
+                var result = await dailyCheckIn(Global.i.dio, cred);
+
+                if (!mounted) {
+                  Global.i.logger
+                      .w('Drawer is closed, cannot show AlertDialog');
+                  return;
+                }
+                await _showResultDialog(
+                  context,
+                  'Result',
+                  'Check in successful!\nYou got: ${result.earned}\n'
+                      'Tip: ${result.tips}\n'
+                      '${result.bonusDay ? 'You earned special bonus for today!\n' : ''}'
+                      '\n\nNote: you have been checked in for ${result.consecutiveCheckIns} '
+                      'consecutive days',
+                );
+              } on BiliApiException catch (e) {
+                await _showResultDialog(
+                    context, 'Error', 'Failed to perform check in: $e');
+              } catch (e) {
+                Global.i.logger.e(e);
+                await _showResultDialog(context, 'Error',
+                    'Failed to perform check in: unknown error');
+              }
+            },
           ),
         ],
       ),
@@ -77,6 +110,30 @@ class _PersonalDashboardState extends State<PersonalDashboard>
         backgroundColor: color,
         padding: buttonPadding,
         alignment: Alignment.centerLeft,
+      ),
+    );
+  }
+
+  Future<void> _showResultDialog(
+      BuildContext context, String title, String message) async {
+    if (!mounted) {
+      Global.i.logger.w('Drawer is closed, cannot show AlertDialog');
+      return;
+    }
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(title),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text('OK'),
+          ),
+        ],
       ),
     );
   }
