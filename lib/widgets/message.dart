@@ -21,7 +21,7 @@ class MessageWidget extends StatefulWidget {
 }
 
 class _MessageWidgetState extends State<MessageWidget> {
-  static const TextStyle _messageDetailsTextStyle = TextStyle(height: 1.7);
+  static const SizedBox _messageDetailsItemSeparator = SizedBox(height: 8);
 
   bool _timestampVisible = false;
 
@@ -108,7 +108,8 @@ class _MessageWidgetState extends State<MessageWidget> {
         ],
       );
 
-  Widget _messageDetails() => Wrap(
+  Widget _messageDetails() => Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           _buildMessageDetailsItem(
             Icons.person,
@@ -132,25 +133,26 @@ class _MessageWidgetState extends State<MessageWidget> {
                   const TextSpan(text: ')'),
                 ],
               ),
-              style: _messageDetailsTextStyle,
             ),
           ),
+          _messageDetailsItemSeparator,
           _buildMessageDetailsItem(
             Icons.assignment_ind,
-            SelectableText(_medalDetails(), style: _messageDetailsTextStyle),
+            SelectableText(_medalDetails()),
           ),
+          _messageDetailsItemSeparator,
           _buildMessageDetailsItem(
             Icons.message,
             SelectableText(
-                (message.sticker != null)
-                    ? '"${message.text}" (${message.sticker!.id})' // Sticker content
-                    : '"${message.text}"', // Message content
-                style: _messageDetailsTextStyle),
+              (message.sticker != null)
+                  ? '"${message.text}" (${message.sticker!.id})' // Sticker content
+                  : '"${message.text}"', // Message content
+            ),
           ),
+          _messageDetailsItemSeparator,
           _buildMessageDetailsItem(
             Icons.access_time,
-            SelectableText('${message.timestamp}',
-                style: _messageDetailsTextStyle),
+            SelectableText(message.timestamp.toString()),
           ),
         ],
       );
