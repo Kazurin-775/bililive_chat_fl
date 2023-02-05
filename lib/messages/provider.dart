@@ -50,6 +50,10 @@ class MessageProvider extends ChangeNotifier {
     notifyListeners();
 
     // Start receiving from WebSocket
+    await _receiveFromStream(stream);
+  }
+
+  Future<void> _receiveFromStream(Stream<dynamic> stream) async {
     await for (var msg in stream) {
       var cmd = msg['cmd'] as String;
       if (cmd.startsWith('DANMU_MSG')) {
@@ -75,6 +79,43 @@ class MessageProvider extends ChangeNotifier {
       _prefs.setInt('wss_port', _port!),
       _prefs.setString('token_$roomId', _token!),
     ]);
+  }
+
+  Future<void> rerun() async {
+    _logger.d('Restarting MessageProvider for room $roomId');
+
+    // Connect to WebSocket server
+    var server = BililiveSocket(
+        host: _host!, port: _port!, roomId: roomId, token: _token!);
+    var stream = server.run();
+
+    // Get last 10 messages
+    var last10 = (await getLast10Messages(Global.i.dio, roomId)).item2;
+
+    // Deduplicate
+    var previousMsgIds = HashSet();
+    for (int i = _messages.length - 1;
+        i >= 0 && previousMsgIds.length < 10;
+        i--) {
+      if (_messages[i] is MessageItem) {
+        var item = _messages[i] as MessageItem;
+        previousMsgIds.add(item.msg.getUniqueId());
+      }
+    }
+    _logger.d('Previous message IDs: $previousMsgIds');
+
+    // Add non-duplicate items to the message list
+    _messages.add(ReconnectionHintItem());
+    for (var msg in last10) {
+      if (!previousMsgIds.contains(msg.getUniqueId())) {
+        _logger.d('Adding message ${msg.getUniqueId()}');
+        _messages.add(MessageItem(msg));
+      }
+    }
+    notifyListeners();
+
+    // Start receiving from WebSocket
+    await _receiveFromStream(stream);
   }
 }
 

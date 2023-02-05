@@ -205,8 +205,11 @@ class _HomePageState extends State<MyHomePage> {
               'new messages.'),
           duration: const Duration(days: 365),
           action: SnackBarAction(
-            label: 'Ignore',
-            onPressed: () {},
+            label: 'Reconnect',
+            onPressed: () {
+              Provider.of<MultiRoomProvider>(context, listen: false)
+                  .reconnect();
+            },
           ),
         ));
       }

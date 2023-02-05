@@ -38,4 +38,8 @@ class MultiRoomProvider extends ChangeNotifier {
     provider.run();
     _rooms[roomId] = provider;
   }
+
+  void reconnect() {
+    _rooms[_current]?.rerun();
+  }
 }
