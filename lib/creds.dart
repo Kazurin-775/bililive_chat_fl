@@ -32,7 +32,7 @@ class BiliCredsProvider extends ChangeNotifier {
   void _setCredsFrom(String json) {
     var obj = jsonDecode(json);
     _credential = BiliCredential(
-      sessdata: obj['sessdata'],
+      sessdata: obj['SESSDATA'],
       biliJct: obj['bili_jct'],
       buvid3: obj['buvid3'],
       uid: obj['uid'],
