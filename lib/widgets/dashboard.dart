@@ -115,7 +115,7 @@ class _PersonalDashboardState extends State<PersonalDashboard>
     return ElevatedButton.icon(
       onPressed: (_locked || widget.cred == null) ? null : onPressed,
       icon: Icon(icon, size: 16),
-      label: Text(text),
+      label: Text(_locked ? 'Working...' : text),
       style: ElevatedButton.styleFrom(
         backgroundColor: color,
         padding: buttonPadding,
