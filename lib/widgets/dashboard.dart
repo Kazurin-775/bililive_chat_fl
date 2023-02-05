@@ -79,11 +79,11 @@ class _PersonalDashboardState extends State<PersonalDashboard>
                 await _showResultDialog(
                   context,
                   'Result',
-                  'Check in successful!\nYou got: ${result.earned}\n'
-                      'Tip: ${result.tips}\n'
-                      '${result.bonusDay ? 'You earned special bonus for today!\n' : ''}'
-                      '\n\nNote: you have been checked in for ${result.consecutiveCheckIns} '
-                      'consecutive days',
+                  'Check in successful!\nYou earned: ${result.earned}\n'
+                      '${result.bonusDay ? 'You earned special bonus today!\n' : ''}'
+                      'Tip: ${result.tips}\n\n'
+                      'Note: you\'ve checked in ${result.consecutiveCheckIns} '
+                      'day(s) in a row. Keep going.',
                 );
               } on BiliApiException catch (e) {
                 await _showResultDialog(
