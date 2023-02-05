@@ -48,7 +48,51 @@ class _PersonalDashboardState extends State<PersonalDashboard>
             'Battery reward',
             Icons.battery_charging_full,
             Colors.orange.shade400,
-            () {},
+            () async {
+              var cred = widget.cred;
+              if (cred == null) {
+                await _showResultDialog(context, 'Error',
+                    'Not signed in yet, cannot get battery rewards');
+                return;
+              }
+
+              setState(() {
+                _locked = true;
+              });
+
+              try {
+                var result = await getBatteryRewardProgress(Global.i.dio, cred);
+                int? numEarned;
+                if (result.status == BatteryRewardStatus.rewardAvailable &&
+                    !result.outOfStock) {
+                  numEarned = await receiveBatteryReward(Global.i.dio, cred);
+                }
+
+                if (!mounted) {
+                  Global.i.logger
+                      .w('Drawer is closed, cannot show AlertDialog');
+                  return;
+                }
+                await _showResultDialog(
+                  context,
+                  'Status',
+                  '${result.outOfStock ? 'Battery rewards out of stock :(' : result.status.toStatusText()}\n'
+                      '${numEarned != null ? 'You earned $numEarned battery today.\n' : ''}\n'
+                      'Progress: ${result.progress} / ${result.target}',
+                );
+              } on BiliApiException catch (e) {
+                await _showResultDialog(context, 'Error',
+                    'Failed to check for battery rewards: $e');
+              } catch (e) {
+                Global.i.logger.e(e);
+                await _showResultDialog(context, 'Error',
+                    'Failed to check for battery rewards: unknown error');
+              } finally {
+                setState(() {
+                  _locked = false;
+                });
+              }
+            },
           ),
           const SizedBox(height: 8),
           // Daily check in (blue)
@@ -209,4 +253,21 @@ class PersonalInfoAppBar extends StatelessWidget {
 
   Widget _buildNicknameText(String text) =>
       Text(text, overflow: TextOverflow.ellipsis);
+}
+
+extension BatteryRewardStatusDisplay on BatteryRewardStatus {
+  String toStatusText() {
+    switch (this) {
+      case BatteryRewardStatus.notStarted:
+        return 'Send messages to get daily battery rewards!';
+      case BatteryRewardStatus.inProgress:
+        return 'Rewards in progress, please continue sending more messages.';
+      case BatteryRewardStatus.rewardAvailable:
+        return 'Congratulations, daily battery rewards awarded!';
+      case BatteryRewardStatus.awarded:
+        return 'Battery rewards already awarded';
+      case BatteryRewardStatus.unknown:
+        return 'Battery rewards status unknown :(';
+    }
+  }
 }
