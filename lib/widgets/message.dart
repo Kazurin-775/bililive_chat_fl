@@ -125,10 +125,10 @@ class _MessageWidgetState extends State<MessageWidget> {
                       decoration: TextDecoration.underline,
                     ),
                     recognizer: TapGestureRecognizer()
-                      ..onTap = () => launchUrl(Uri.https(
-                            'space.bilibili.com',
-                            message.uid.toString(),
-                          )),
+                      ..onTap = () => launchUrl(
+                          Uri.https(
+                              'space.bilibili.com', message.uid.toString()),
+                          mode: LaunchMode.externalApplication),
                   ),
                   const TextSpan(text: ')'),
                 ],

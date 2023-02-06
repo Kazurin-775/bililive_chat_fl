@@ -184,7 +184,8 @@ class _PersonalDashboardState extends State<PersonalDashboard>
                               decoration: TextDecoration.underline,
                             ),
                             recognizer: TapGestureRecognizer()
-                              ..onTap = () => launchUrl(Uri.parse(result.url)),
+                              ..onTap = () => launchUrl(Uri.parse(result.url),
+                                  mode: LaunchMode.externalApplication),
                           ),
                           TextSpan(
                             text: '\n\nNote: this is video '
