@@ -75,7 +75,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<MyHomePage> {
-  bool _scrollLock = false;
+  bool _autoScroll = true;
 
   @override
   Widget build(BuildContext context) {
@@ -141,7 +141,7 @@ class _HomePageState extends State<MyHomePage> {
             child: Consumer<MultiRoomProvider>(
               builder: (context, provider, child) {
                 // Scroll to bottom at the end of this frame
-                if (!_scrollLock) {
+                if (_autoScroll) {
                   WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
                     widget._scrollController.animateTo(
                       widget._scrollController.position.maxScrollExtent,
@@ -154,9 +154,9 @@ class _HomePageState extends State<MyHomePage> {
                 return NotificationListener<ScrollNotification>(
                   onNotification: (notification) {
                     if (notification.metrics.extentAfter >= 200) {
-                      _scrollLock = true;
+                      _autoScroll = false;
                     } else if (notification.metrics.extentAfter <= 10) {
-                      _scrollLock = false;
+                      _autoScroll = true;
                     }
                     return false;
                   },
