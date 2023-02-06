@@ -23,6 +23,7 @@ class _MessageInputWidgetState extends State<MessageInputWidget> {
   bool _sendInProgress = false;
   bool _busy = false;
   int _length = 0;
+  String? _lastSent;
 
   @override
   Widget build(BuildContext context) {
@@ -160,6 +161,7 @@ class _MessageInputWidgetState extends State<MessageInputWidget> {
         _length = 0;
       });
 
+      _lastSent = message;
       // Clear input box (to indicate to the user that the app has acknowledged
       // user input)
       _editController.text = '';
@@ -256,9 +258,35 @@ class _MessageInputWidgetState extends State<MessageInputWidget> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    // Listen to message reword event
+    Global.i.eventBus.on<MessageRewordEvent>().listen((event) {
+      var lastSent = _lastSent;
+      if (lastSent == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('You haven\'t sent any messages yet'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+        return;
+      }
+
+      setState(() {
+        _editController.text = lastSent;
+        _length = lastSent.length;
+      });
+    });
+  }
+
+  @override
   void dispose() {
     super.dispose();
     _editController.dispose();
     _textBoxFocusNode.dispose();
   }
 }
+
+/// Post this event to reword last message.
+class MessageRewordEvent {}

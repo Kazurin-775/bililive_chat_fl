@@ -89,14 +89,18 @@ class _HomePageState extends State<MyHomePage> {
             itemBuilder: (context) => [
               const PopupMenuItem(
                 value: 0,
-                child: Text('Set room ID'),
+                child: Text('Reword last message'),
               ),
               const PopupMenuItem(
                 value: 1,
+                child: Text('Set room ID'),
+              ),
+              const PopupMenuItem(
+                value: 2,
                 child: Text('Set cookie JSON'),
               ),
               PopupMenuItem(
-                value: 2,
+                value: 3,
                 child: Row(
                   children: [
                     // Set onChanged = null to make the checkbox not clickable
@@ -112,14 +116,17 @@ class _HomePageState extends State<MyHomePage> {
             onSelected: (value) {
               switch (value) {
                 case 0:
+                  Global.i.eventBus.fire(MessageRewordEvent());
+                  break;
+                case 1:
                   widget._showRoomIdInputDialog(
                       context, Provider.of(context, listen: false));
                   break;
-                case 1:
+                case 2:
                   Provider.of<BiliCredsProvider>(context, listen: false)
                       .showEditDialog(context);
                   break;
-                case 2:
+                case 3:
                   Provider.of<BiliCredsProvider>(context, listen: false)
                       .toggleSimulateSend();
                   break;
