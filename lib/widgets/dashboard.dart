@@ -1,8 +1,12 @@
 import 'package:bililive_api_fl/bililive_api_fl.dart';
 import 'package:dio_http_cache/dio_http_cache.dart';
+import 'package:flutter/gestures.dart' show TapGestureRecognizer;
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../global.dart';
+import '../messages/multi.dart';
 import 'avatar.dart';
 
 class PersonalDashboard extends StatefulWidget {
@@ -133,6 +137,84 @@ class _PersonalDashboardState extends State<PersonalDashboard>
                 Global.i.logger.e(e);
                 await _showResultDialog(context, 'Error',
                     'Failed to perform check in: unknown error');
+              } finally {
+                setState(() {
+                  _locked = false;
+                });
+              }
+            },
+          ),
+          const Divider(height: 1),
+          // Current video (pink)
+          _buildActionButton(
+            'Current video',
+            Icons.ondemand_video,
+            Colors.pink.shade600,
+            () async {
+              setState(() {
+                _locked = true;
+              });
+
+              try {
+                var result = await getCurrentVideo(
+                  Global.i.dio,
+                  Provider.of<MultiRoomProvider>(context, listen: false)
+                      .current,
+                );
+
+                if (!mounted) {
+                  Global.i.logger
+                      .w('Drawer is closed, cannot show AlertDialog');
+                  return;
+                }
+                if (result != null) {
+                  await showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: const Text('Result'),
+                      content: SelectableText.rich(TextSpan(
+                        text:
+                            'Now playing: "${result.title}"\n(Current position at '
+                            '${result.getCurrentTimeAsString()}; av${result.avid})\n\n',
+                        children: [
+                          TextSpan(
+                            text: result.url,
+                            style: TextStyle(
+                              color: Colors.blue.shade800,
+                              decoration: TextDecoration.underline,
+                            ),
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () => launchUrl(Uri.parse(result.url)),
+                          ),
+                          TextSpan(
+                            text: '\n\nNote: this is video '
+                                '#${result.positionInSequence} in the replay sequence',
+                          ),
+                        ],
+                      )),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: const Text('OK'),
+                        ),
+                      ],
+                    ),
+                  );
+                } else {
+                  await _showResultDialog(
+                    context,
+                    'Result',
+                    'Currently, no video is playing in this room.\nEither a '
+                        'live streaming is ongoing, or the live host did not '
+                        'enable video playback.',
+                  );
+                }
+              } catch (e) {
+                Global.i.logger.e(e);
+                await _showResultDialog(
+                    context, 'Error', 'Failed to get current video');
               } finally {
                 setState(() {
                   _locked = false;
