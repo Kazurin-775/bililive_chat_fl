@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart' show ScrollDirection;
 import 'package:provider/provider.dart';
 
 import 'creds.dart';
@@ -74,7 +75,7 @@ class MyHomePage extends StatefulWidget {
   }
 }
 
-class _HomePageState extends State<MyHomePage> {
+class _HomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   bool _autoScroll = true;
 
   @override
@@ -153,10 +154,14 @@ class _HomePageState extends State<MyHomePage> {
 
                 return NotificationListener<ScrollNotification>(
                   onNotification: (notification) {
-                    if (notification.metrics.extentAfter >= 200) {
+                    if (notification is UserScrollNotification &&
+                        notification.direction != ScrollDirection.idle) {
+                      // Disable auto scroll when user initiates scrolling
                       _autoScroll = false;
-                    } else if (notification.metrics.extentAfter <= 10) {
-                      _autoScroll = true;
+                    } else if (notification is ScrollEndNotification) {
+                      // Re-enable auto scroll when the list view hits the
+                      // bottom edge
+                      _autoScroll = notification.metrics.extentAfter < 10;
                     }
                     return false;
                   },
@@ -187,6 +192,7 @@ class _HomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
 
     // If no room ID is configured, ask for one at startup
     if ((Global.i.prefs.getInt('room_id') ?? 0) == 0) {
@@ -221,5 +227,24 @@ class _HomePageState extends State<MyHomePage> {
         ));
       }
     });
+  }
+
+  @override
+  void didChangeMetrics() {
+    super.didChangeMetrics();
+    // When the viewport size changes while auto scroll is enabled, jump to the
+    // end of list automatically
+    if (_autoScroll) {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        widget._scrollController
+            .jumpTo(widget._scrollController.position.maxScrollExtent);
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 }
