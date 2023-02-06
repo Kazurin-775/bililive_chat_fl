@@ -33,16 +33,14 @@ class MyApp extends StatelessWidget {
           fontFamily: getPlatformDefaultFont(),
           primarySwatch: Colors.blue,
         ),
-        home: MyHomePage(),
+        home: const MyHomePage(),
       ),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  final ScrollController _scrollController = ScrollController();
-
-  MyHomePage({super.key});
+  const MyHomePage({super.key});
 
   @override
   State<StatefulWidget> createState() => _HomePageState();
@@ -76,6 +74,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<MyHomePage> with WidgetsBindingObserver {
+  final ScrollController _scrollController = ScrollController();
   bool _autoScroll = true;
 
   @override
@@ -144,8 +143,8 @@ class _HomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                 // Scroll to bottom at the end of this frame
                 if (_autoScroll) {
                   WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-                    widget._scrollController.animateTo(
-                      widget._scrollController.position.maxScrollExtent,
+                    _scrollController.animateTo(
+                      _scrollController.position.maxScrollExtent,
                       duration: const Duration(milliseconds: 400),
                       curve: Curves.easeOut,
                     );
@@ -166,7 +165,7 @@ class _HomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                     return false;
                   },
                   child: ListView.separated(
-                    controller: widget._scrollController,
+                    controller: _scrollController,
                     itemCount: provider.messages.length,
                     itemBuilder: (context, index) =>
                         provider.messages[index].asWidget(),
@@ -236,8 +235,7 @@ class _HomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     // end of list automatically
     if (_autoScroll) {
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        widget._scrollController
-            .jumpTo(widget._scrollController.position.maxScrollExtent);
+        _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
       });
     }
   }
@@ -246,5 +244,6 @@ class _HomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
+    _scrollController.dispose();
   }
 }
