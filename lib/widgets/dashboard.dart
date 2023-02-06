@@ -29,25 +29,22 @@ class _PersonalDashboardState extends State<PersonalDashboard>
   }
 
   Widget _buildContent(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+    return Expanded(
+      child: ListView(
         children: [
           // Change medal (purple)
           _buildActionButton(
             'Change medal',
             Icons.assignment_ind,
-            Colors.purple.shade400,
+            Colors.purple.shade600,
             () {},
           ),
-          const SizedBox(height: 8),
+          const Divider(height: 1),
           // Battery reward (orange)
           _buildActionButton(
             'Battery reward',
             Icons.battery_charging_full,
-            Colors.orange.shade400,
+            Colors.orange.shade600,
             () async {
               var cred = widget.cred;
               if (cred == null) {
@@ -94,12 +91,12 @@ class _PersonalDashboardState extends State<PersonalDashboard>
               }
             },
           ),
-          const SizedBox(height: 8),
+          const Divider(height: 1),
           // Daily check in (blue)
           _buildActionButton(
             'Daily check in',
             Icons.event_available,
-            Colors.blue.shade400,
+            Colors.blue.shade600,
             () async {
               var cred = widget.cred;
               if (cred == null) {
@@ -148,22 +145,28 @@ class _PersonalDashboardState extends State<PersonalDashboard>
     );
   }
 
-  ElevatedButton _buildActionButton(
+  InkWell _buildActionButton(
     String text,
     IconData icon,
     Color color,
     void Function()? onPressed,
   ) {
-    const buttonPadding = EdgeInsets.symmetric(horizontal: 12, vertical: 16);
+    const buttonPadding = EdgeInsets.symmetric(horizontal: 16, vertical: 12);
 
-    return ElevatedButton.icon(
-      onPressed: (_locked || widget.cred == null) ? null : onPressed,
-      icon: Icon(icon, size: 16),
-      label: Text(_locked ? 'Working...' : text),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: color,
+    var realColor = _locked ? Colors.grey : color;
+
+    return InkWell(
+      onTap: (_locked || widget.cred == null) ? null : onPressed,
+      child: Padding(
         padding: buttonPadding,
-        alignment: Alignment.centerLeft,
+        child: Row(children: [
+          Icon(icon, size: 20, color: realColor),
+          const SizedBox(width: 6),
+          Text(
+            _locked ? 'Working... Do not close' : text,
+            style: TextStyle(color: realColor),
+          ),
+        ]),
       ),
     );
   }
